@@ -31,6 +31,7 @@ import javax.xml.soap.SOAPConnection;
 import javax.xml.soap.SOAPConnectionFactory;
 import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPMessage;
+import py.com.fecyl.comunicasifen.util.ConsultaRucRequest;
 import py.com.fecyl.comunicasifen.util.KResponse;
 import py.com.fecyl.comunicasifen.util.ServiciosSoap;
 import py.com.fecyl.comunicasifen.util.ServiciosXml;
@@ -175,6 +176,50 @@ public class SifenServices {
         response.setMensaje("Consulta RUC exitosa");
         try {
             String textContent = sifenResponse.getSOAPBody().getElementsByTagName("ns2:xContenDE").item(0).getTextContent();
+            response.setDato(textContent);
+        } catch (SOAPException ex) {
+            Logger.getLogger(SifenServices.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (Exception ex) {
+            Logger.getLogger(SifenServices.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return response;
+    } 
+    
+    public Object consultarRUC(ConsultaRucRequest rucRequest) {
+        logger.info("Ejecutando comunicaSifen consultar RUC");
+        KResponse response = new KResponse();
+        //Respuesta de sifen al mensaje de consulta de DE
+        SOAPMessage sifenResponse = null;
+        //Mensaje xml en formato soap
+        SOAPMessage xmlSoapConsultaRUC = null;
+        
+        try {
+            //Genera el mensaje SOAP que contiene el xml de evento
+            xmlSoapConsultaRUC = serviciosSoap.crearXmlConsultaRUC(rucRequest.getNroDocumento());
+        } catch (Exception e) {
+            response.setEstado(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
+            response.setMensaje("Error en comunicaSifen consultaDE al generar el mensaje SOAP de consulta de un DE "
+                    + "enviar a SIFEN ");
+            response.setDato(e.getMessage());
+            return response;
+        }
+
+        try {
+            //Obtiene la direccion http de sifen para consulta DE
+            String sifenConsultaDeUrl = "https://sifen-test.set.gov.py/de/ws/consultas/consulta-ruc.wsdl";
+            //envia el mensaje a la url y obtiene la respuesta
+            sifenResponse = sendXmlSoap(xmlSoapConsultaRUC, sifenConsultaDeUrl);
+        } catch (Exception e) {
+            response.setEstado(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
+            response.setMensaje("Error en comunicaSifen al enviar el mensaje SOAP al SIFEN para consular RUC");
+            response.setDato(e.getMessage());
+            return response;
+        }
+
+        response.setEstado(Response.Status.OK.getStatusCode());
+        response.setMensaje("Consulta RUC exitosa");
+        try {
+            String textContent = sifenResponse.getSOAPBody().getElementsByTagName("ns2:xContRUC").item(0).getTextContent();
             response.setDato(textContent);
         } catch (SOAPException ex) {
             Logger.getLogger(SifenServices.class.getName()).log(Level.SEVERE, null, ex);

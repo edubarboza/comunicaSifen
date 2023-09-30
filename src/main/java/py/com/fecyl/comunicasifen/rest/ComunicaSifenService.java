@@ -13,6 +13,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import py.com.fecyl.comunicasifen.bean.SifenServices;
+import py.com.fecyl.comunicasifen.util.ConsultaRucRequest;
 
 /**
  *
@@ -27,9 +28,18 @@ public class ComunicaSifenService {
     @Path("/consultaRUC")
     @POST
     @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_XML)
     public Object consultaRuc(InputStream xmlInputStream){
         //Llama al servicio para enviar el RUC
         return sifenServices.consultarRUC(xmlInputStream);
+    }
+    
+    @Path("/consultaRucPorNro")
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Object consultaRucPorNro(ConsultaRucRequest request){
+        //Llama al servicio para enviar el RUC
+        return sifenServices.consultarRUC(request);
     }
 }

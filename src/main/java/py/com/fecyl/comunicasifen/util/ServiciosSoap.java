@@ -395,13 +395,13 @@ public class ServiciosSoap {
             SOAPElement dId = rEnviConsRUC.addChildElement("dId", nameSpace);
             dId.addTextNode("1");
 
-            SOAPElement drucCons = rEnviConsRUC.addChildElement("drucCons", nameSpace);
+            SOAPElement drucCons = rEnviConsRUC.addChildElement("dRUCCons", nameSpace);
             drucCons.addTextNode(ruc);
 
             //Imprime el request SOAP
-            //System.out.println("Mensaje SOAP:");
-            //soapRequest.writeTo(System.out);
-            //System.out.println();
+            System.out.println("Mensaje SOAP:");
+            soapRequest.writeTo(System.out);
+            System.out.println();
             return soapRequest;
 
         } catch (SOAPException e) {

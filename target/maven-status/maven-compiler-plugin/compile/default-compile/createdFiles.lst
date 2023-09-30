@@ -9,6 +9,7 @@ py\com\fecyl\comunicasifen\wsdl\consulta\ruc\package-info.class
 py\com\fecyl\comunicasifen\wsdl\consulta\ruc\TdDCondCred.class
 py\com\fecyl\comunicasifen\wsdl\consulta\ruc\RResEnviConsRUC.class
 py\com\fecyl\comunicasifen\bean\SoapMessageHandler.class
+py\com\fecyl\comunicasifen\util\ConsultaRucRequest.class
 py\com\fecyl\comunicasifen\wsdl\consulta\ruc\REnviConsRUC.class
 py\com\fecyl\comunicasifen\wsdl\consulta\ruc\TcCondNeg.class
 py\com\fecyl\comunicasifen\wsdl\consulta\ruc\TdDtipDocRec.class
