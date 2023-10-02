@@ -20,6 +20,7 @@ import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
+import com.sun.xml.ws.developer.JAXWSProperties;
 import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -49,6 +50,10 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 import javax.ejb.EJB;
 import py.com.fecyl.comunicasifen.bean.SoapMessageHandler;
+import py.com.fecyl.comunicasifen.wsdl.de.DeWsSyncRecibe;
+import py.com.fecyl.comunicasifen.wsdl.de.DeWsSyncRecibeService;
+import py.com.fecyl.comunicasifen.wsdl.de.REnviDe;
+import py.com.fecyl.comunicasifen.wsdl.de.RProtDe;
 
 @Stateless
 public class ServiciosSoap {
@@ -196,7 +201,7 @@ public class ServiciosSoap {
         return docXml.getDocumentElement();
     }
 
-    /*public RProtDe sendDeToSifen(Element soapDe) throws Exception {
+    public RProtDe sendDeToSifen(Element soapDe) throws Exception {
         doTrustToCertificates();
         DeWsSyncRecibeService service;
         DeWsSyncRecibe port;
@@ -212,8 +217,7 @@ public class ServiciosSoap {
         BindingProvider provider = (BindingProvider) port;
         String SIFEN_RECIBE_API_URL = null;
         try {
-            SIFEN_RECIBE_API_URL = databaseOperations.obtenerConfiguracion("url_sifen_envio_de",
-                    Boolean.parseBoolean(loadProperties.getUSAR_URL_PRODUCCION()));
+            SIFEN_RECIBE_API_URL = "URL_SIFEN";
         } catch (Exception e) {
             logger.severe("Error al obtener la configuracion de la base de datos");
             throw e;
@@ -235,7 +239,7 @@ public class ServiciosSoap {
         xDE.setAny(soapDe);
         String dId = xDE.getAny().getElementsByTagName("dDVId").item(0).getTextContent();
         return port.rEnviDe(new BigInteger(dId), xDE);
-    }*/
+    }
 
     /*public SifenResponseModelLote sendLoteToSifen(InputStream streamXml, String loteId) throws Exception {
         doTrustToCertificates();

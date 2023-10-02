@@ -21,6 +21,7 @@ import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
+import javax.ejb.EJBTransactionRolledbackException;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.json.Json;
@@ -31,10 +32,13 @@ import javax.xml.soap.SOAPConnection;
 import javax.xml.soap.SOAPConnectionFactory;
 import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPMessage;
+import org.w3c.dom.Element;
 import py.com.fecyl.comunicasifen.util.ConsultaRucRequest;
 import py.com.fecyl.comunicasifen.util.KResponse;
 import py.com.fecyl.comunicasifen.util.ServiciosSoap;
 import py.com.fecyl.comunicasifen.util.ServiciosXml;
+import py.com.fecyl.comunicasifen.util.SifenResponseMoldelDE;
+import py.com.fecyl.comunicasifen.wsdl.de.RProtDe;
 
 /**
  *
@@ -227,7 +231,35 @@ public class SifenServices {
             Logger.getLogger(SifenServices.class.getName()).log(Level.SEVERE, null, ex);
         }
         return response;
-    } 
+    }
+    
+    public KResponse sendDeToSifen(InputStream xmlIs) {
+        logger.info("Ejecutando comunicaSifen DE");
+        KResponse response = new KResponse();
+        Element soapDe;
+        try {
+            soapDe = serviciosSoap.createDEelement(xmlIs);
+            RProtDe soapResponse = serviciosSoap.sendDeToSifen(soapDe);
+            //RProtDe soapResponse = serviciosSoap.testError();
+            SifenResponseMoldelDE sifenResponse = new SifenResponseMoldelDE(soapResponse);
+            //databaseOperations.updateDE(sifenResponse, soapResponse);
+            response.setEstado(Response.Status.OK.getStatusCode());
+            response.setMensaje(sifenResponse.getdEstRes() + ":" + sifenResponse.getdMsgRes());
+            return response;
+        } catch (EJBTransactionRolledbackException e) {
+            //Cuando no se puede comunicar con el servidor SIFEN, el codigo de error es 99
+            response.setEstado(99);
+            response.setMensaje(e.getMessage());
+            response.setDato(e.getCause());
+            return response;
+        } catch (Exception e) {
+            logger.severe("Error al enviar el xml al SIFEN. Causa: " + e.getMessage());
+            response.setEstado(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
+            response.setMensaje(e.getMessage());
+            response.setDato(e.getCause());
+            return response;
+        }
+    }
      
     private SOAPMessage sendXmlSoap(SOAPMessage xmlSoapEvent, String sifenUrl) throws SOAPException, IOException {
         System.out.println("URL: " + sifenUrl);
