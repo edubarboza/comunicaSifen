@@ -95,7 +95,7 @@ public class SifenServices {
 
         try {
             //Obtiene la direccion http de sifen para consulta DE
-            String sifenConsultaDeUrl = "https://sifen-test.set.gov.py/de/ws/consultas/consulta.wsdl";
+            String sifenConsultaDeUrl = "https://sifen.set.gov.py/de/ws/consultas/consulta.wsdl";
             //envia el mensaje a la url y obtiene la respuesta
             sifenResponse = sendXmlSoap(xmlSoapConsultaDE, sifenConsultaDeUrl);
         } catch (Exception e) {
@@ -206,7 +206,7 @@ public class SifenServices {
 
         try {
             //Obtiene la direccion http de sifen para consulta DE
-            String sifenConsultaDeUrl = "https://sifen-test.set.gov.py/de/ws/consultas/consulta-ruc.wsdl";
+            String sifenConsultaDeUrl = "https://sifen.set.gov.py/de/ws/consultas/consulta-ruc.wsdl";
             //envia el mensaje a la url y obtiene la respuesta
             sifenResponse = sendXmlSoap(xmlSoapConsultaRUC, sifenConsultaDeUrl);
         } catch (Exception e) {

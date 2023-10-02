@@ -79,7 +79,8 @@ public class ServiciosSoap {
         keyManagerFactory.init(keyStore, pKeyPassword.toCharArray());
 
         // Set ssl context with private key and truststore details
-        SSLContext sc = SSLContext.getInstance("TLSv1");
+        SSLContext sc = SSLContext.getInstance("TLSv1.2");
+        //SSLContext sc = SSLContext.getInstance("SSL");
         sc.init(keyManagerFactory.getKeyManagers(), null, new SecureRandom());
         SSLSocketFactory sockFact = sc.getSocketFactory();
 
@@ -370,6 +371,7 @@ public class ServiciosSoap {
             MessageFactory messageFactory = MessageFactory.newInstance(SOAPConstants.SOAP_1_2_PROTOCOL);
             //Crea el esqueleto de un mensaje SOAP
             SOAPMessage soapRequest = messageFactory.createMessage();
+            //soapRequest.getMimeHeaders().addHeader("Content-type", "application/soap+xml; charset=utf-8");
 
             SOAPPart part = soapRequest.getSOAPPart();
 
