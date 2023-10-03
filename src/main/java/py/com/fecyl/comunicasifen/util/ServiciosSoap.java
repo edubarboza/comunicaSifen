@@ -2,6 +2,7 @@ package py.com.fecyl.comunicasifen.util;
 
 
 
+import com.sun.istack.ByteArrayDataSource;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.w3c.dom.Document;
@@ -54,6 +55,8 @@ import py.com.fecyl.comunicasifen.wsdl.de.DeWsSyncRecibe;
 import py.com.fecyl.comunicasifen.wsdl.de.DeWsSyncRecibeService;
 import py.com.fecyl.comunicasifen.wsdl.de.REnviDe;
 import py.com.fecyl.comunicasifen.wsdl.de.RProtDe;
+import py.com.fecyl.comunicasifen.wsdl.lote.DeWsAsyncRecibe;
+import py.com.fecyl.comunicasifen.wsdl.lote.DeWsAsyncRecibeService;
 
 @Stateless
 public class ServiciosSoap {
@@ -415,5 +418,56 @@ public class ServiciosSoap {
             e.printStackTrace();
             throw e;
         }
+    }
+    
+    public SifenResponseModelLote sendLoteToSifen(InputStream streamXml, String loteId) throws Exception {
+        doTrustToCertificates();
+        DeWsAsyncRecibeService service = new DeWsAsyncRecibeService();
+        //envia el mensaje a la url y obtiene la respuesta
+        DeWsAsyncRecibe port = service.getDeWsAsyncRecibeSoap12();
+
+        BindingProvider provider = (BindingProvider) port;
+        try {
+            //url envio de un lote de DEs a SIFEN
+            
+            String SIFEN_RECIBE_LOTE_API_URL = "URL_ENVIO_LOTE";
+            
+            provider.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY,
+                    SIFEN_RECIBE_LOTE_API_URL);
+            provider.getRequestContext().put("javax.xml.ws.client.connectionTimeout", 30 * 1000);
+            provider.getRequestContext().put("javax.xml.ws.client.receiveTimeout", 30 * 1000);
+
+
+        } catch (Exception e) {
+            throw e;
+        }
+        try {
+            provider.getRequestContext().put(JAXWSProperties.SSL_SOCKET_FACTORY, getCustomSocketFactory());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        Binding binding = provider.getBinding();
+        List<Handler> handlerList = binding.getHandlerChain();
+        handlerList.add(new SoapMessageHandler());
+        binding.setHandlerChain(handlerList);
+        DataSource source = null;
+        byte[] test = null;
+        try {
+            test = zipBytes("lote.zip", IOUtils.toByteArray(streamXml));
+            source = new ByteArrayDataSource(test, "application/zip");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        DataHandler xDE = new DataHandler(source);
+
+        Holder<XMLGregorianCalendar> dFecProc = new Holder<XMLGregorianCalendar>();
+        Holder<String> dCodRes = new Holder<String>();
+        Holder<String> dMsgRes = new Holder<String>();
+        Holder<Long> dProtConsLote = new Holder<Long>();
+        Holder<BigInteger> dTpoProces = new Holder<BigInteger>();
+        BigInteger loteIdBigInt = new BigInteger(loteId);
+        port.rEnvioLote(loteIdBigInt, xDE, dFecProc, dCodRes, dMsgRes, dProtConsLote, dTpoProces);
+
+        return new SifenResponseModelLote(xDE, dFecProc, dCodRes, dMsgRes, dProtConsLote, dTpoProces, loteIdBigInt);
     }
 }

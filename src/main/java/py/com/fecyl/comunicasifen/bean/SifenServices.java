@@ -37,6 +37,7 @@ import py.com.fecyl.comunicasifen.util.ConsultaRucRequest;
 import py.com.fecyl.comunicasifen.util.KResponse;
 import py.com.fecyl.comunicasifen.util.ServiciosSoap;
 import py.com.fecyl.comunicasifen.util.ServiciosXml;
+import py.com.fecyl.comunicasifen.util.SifenResponseModelLote;
 import py.com.fecyl.comunicasifen.util.SifenResponseMoldelDE;
 import py.com.fecyl.comunicasifen.wsdl.de.RProtDe;
 
@@ -52,6 +53,9 @@ public class SifenServices {
     
     @Inject
     ServiciosXml serviciosXml;
+    
+    @EJB
+    EventServices eventServices;
     
     private final Logger logger = LogManager.getLogManager().getLogger(SifenServices.class.getName());
     
@@ -318,6 +322,67 @@ public class SifenServices {
         }
         String strMsg = new String(out.toByteArray());
         System.out.println(strMsg);
+    }
+    
+     public KResponse sendXmlSoapEvent(InputStream xmlInputStream) {
+        logger.info("Ejecutando comunicaSifen evento");
+        KResponse response = new KResponse();
+        //Respuesta de sifen al mensaje al pedido de cancelacion
+        SOAPMessage sifenResponse = null;
+        //Mensaje xml en formato soap
+        SOAPMessage xmlSoapEvent = null;
+
+        try {
+            //Genera el mensaje SOAP que contiene el xml de evento
+            xmlSoapEvent = serviciosSoap.crearXmlEventoSoap(xmlInputStream);
+        } catch (Exception e) {
+            response.setEstado(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
+            response.setMensaje("Error en comunicaSifen evento al generar el mensaje SOAP de cancelacion de eventos para "
+                    + "enviar a SIFEN ");
+            response.setDato(e.getMessage());
+            return response;
+        }
+
+        try {
+            String sifenEventUrl= "URL_EVENTO";
+            //envia el mensaje a la url y obtiene la respuesta
+            sifenResponse = sendXmlSoap(xmlSoapEvent, sifenEventUrl);
+        } catch (Exception e) {
+            response.setEstado(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
+            response.setMensaje("Error en comunicaSifen al enviar el mensaje SOAP al SIFEN para cancelar los eventos");
+            response.setDato(e.getMessage());
+            return response;
+        }
+
+        //Obtiene los datos del mensaje y la respuesta y actualiza los datos de la tabla eventos
+        String result = eventServices.updateEventData(xmlSoapEvent, sifenResponse);
+        if (result != null) {
+            response.setEstado(Response.Status.OK.getStatusCode());
+            response.setMensaje(result);
+            return response;
+        } else {
+            response.setEstado(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
+            response.setMensaje("Los eventos fueron enviado a SIFEN, pero ocurrio un error en comunicaSifen al "
+                    + "actualizar los datos de los eventos enviados");
+            return response;
+        }
+    }
+     
+     public KResponse sendLoteToSifen(InputStream streamXml, String loteId) {
+        logger.info("Ejecutando comSifen Lote");
+        KResponse response = new KResponse();
+        try {
+            SifenResponseModelLote loteHelper = serviciosSoap.sendLoteToSifen(streamXml, loteId);
+            //databaseOperations.updateLote(loteHelper);
+            response.setEstado(Response.Status.OK.getStatusCode());
+            response.setMensaje(loteHelper.getdMsgRes().value);
+            return response;
+        } catch (Exception e) {
+            response.setEstado(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
+            response.setMensaje(e.getMessage());
+            return response;
+        }
+
     }
  
     

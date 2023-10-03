@@ -1,0 +1,798 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/"
+                  xmlns:tns="http://ekuatia.set.gov.py/sifen/xsd" targetNamespace="http://ekuatia.set.gov.py/sifen/xsd">
+    <wsdl:types>
+        <xs:schema xmlns:ns0="http://www.w3.org/2000/09/xmldsig#" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+                   xmlns="http://ekuatia.set.gov.py/sifen/xsd" attributeFormDefault="unqualified"
+                   elementFormDefault="qualified" targetNamespace="http://ekuatia.set.gov.py/sifen/xsd">
+            <xs:import namespace="http://www.w3.org/2000/09/xmldsig#"/>
+            <xs:import namespace="http://www.w3.org/2000/09/xmldsig#"/>
+            <xs:element name="rEnviEventoDe">
+                <xs:annotation>
+                    <xs:documentation>Recepcion de Eventos de Documentos Electronicos</xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="dId">
+                            <xs:annotation>
+                                <xs:documentation>Identificador de control de envio</xs:documentation>
+                            </xs:annotation>
+                            <xs:simpleType>
+                                <xs:restriction base="xs:integer">
+                                    <xs:totalDigits value="15"/>
+                                </xs:restriction>
+                            </xs:simpleType>
+                        </xs:element>
+                        <xs:element name="dEvReg">
+                            <xs:annotation>
+                                <xs:documentation>Evento a ser registrado
+                                </xs:documentation>
+                            </xs:annotation>
+                            <xs:complexType>
+                                <xs:sequence>
+                                    <xs:element name="gGroupGesEve" type="tgGroupGesEve"/>
+                                </xs:sequence>
+                            </xs:complexType>
+                        </xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="rRetEnviEventoDe">
+                <xs:annotation>
+                    <xs:documentation>Respuesta de Eventos</xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="dFecProc" type="fecUTC"/>
+                        <xs:element maxOccurs="15" name="gResProcEVe" type="tgResProcEVe">
+                            <xs:annotation>
+                                <xs:documentation>Grupo Resultado de Procesamiento del Evento
+                                </xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:simpleType name="tdCodRes">
+                <xs:annotation>
+                    <xs:documentation>
+                        Codigo de resultado de procesamiento
+                    </xs:documentation>
+                </xs:annotation>
+                <xs:restriction base="xs:string">
+                    <xs:pattern value="[0-9]{4}"/>
+                </xs:restriction>
+            </xs:simpleType>
+            <xs:simpleType name="tdMsgRes">
+                <xs:annotation>
+                    <xs:documentation>
+                        Mensaje del resultado de procesamiento
+                    </xs:documentation>
+                </xs:annotation>
+                <xs:restriction base="xs:string">
+                    <xs:minLength value="1"/>
+                    <xs:maxLength value="255"/>
+                </xs:restriction>
+            </xs:simpleType>
+            <xs:simpleType name="tdEstRes">
+                <xs:annotation>
+                    <xs:documentation>
+                        Estado del resultado
+                    </xs:documentation>
+                </xs:annotation>
+                <xs:restriction base="xs:string">
+                    <xs:minLength value="8"/>
+                    <xs:maxLength value="30"/>
+                </xs:restriction>
+            </xs:simpleType>
+            <xs:simpleType name="tdProtAut">
+                <xs:annotation>
+                    <xs:documentation>
+                        Número de transacción
+                    </xs:documentation>
+                </xs:annotation>
+                <xs:restriction base="xs:long"/>
+            </xs:simpleType>
+            <xs:simpleType name="tid">
+                <xs:annotation>
+                    <xs:documentation>
+                        Número Identificador del Evento
+                    </xs:documentation>
+                </xs:annotation>
+                <xs:restriction base="xs:integer">
+                    <xs:pattern value="[0-9]{1,10}"/>
+                    <xs:minInclusive value="0"/>
+                    <xs:maxInclusive value="9999999999"/>
+                </xs:restriction>
+            </xs:simpleType>
+            <xs:simpleType name="fecUTC">
+                <xs:annotation>
+                    <xs:documentation>
+                        Normalizador de Fecha y Hora en Formato UTC {AAAA-MM-DDThh:mm:ss-ss:ss}
+                    </xs:documentation>
+                </xs:annotation>
+                <xs:restriction base="xs:dateTime">
+                    <xs:pattern value="\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d[+|-]\d\d:\d\d"/>
+                </xs:restriction>
+            </xs:simpleType>
+            <xs:complexType name="tgResProc">
+                <xs:annotation>
+                    <xs:documentation>
+                        Grupo Resultado de Procesamiento
+                    </xs:documentation>
+                </xs:annotation>
+                <xs:sequence>
+                    <xs:element name="dCodRes" type="tdCodRes"/>
+                    <xs:element name="dMsgRes" type="tdMsgRes"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="tgResProcEVe">
+                <xs:annotation>
+                    <xs:documentation>
+                        Grupo de resultado de procesamiento
+                    </xs:documentation>
+                </xs:annotation>
+                <xs:sequence>
+                    <xs:element name="dEstRes" type="tdEstRes"/>
+                    <xs:element minOccurs="0" name="dProtAut" type="tdProtAut"/>
+                    <xs:element name="id" type="tid"/>
+                    <xs:element maxOccurs="100" name="gResProc" type="tgResProc"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="trGeVeCan">
+                <xs:annotation>
+                    <xs:documentation>
+                        Grupo de Datos que identifican al evento de Cancelación del DTE
+                    </xs:documentation>
+                </xs:annotation>
+                <xs:sequence>
+                    <xs:element name="Id" type="tId"/>
+                    <xs:element name="mOtEve" type="tmotEve"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="trGeVeInu">
+                <xs:annotation>
+                    <xs:documentation>
+                        Grupo de Datos que identifican al evento de Inutilización de numero de un DE
+                    </xs:documentation>
+                </xs:annotation>
+                <xs:sequence>
+                    <xs:element name="dNumTim" type="tdNumTim"/>
+                    <xs:element name="dEst" type="tdEst"/>
+                    <xs:element name="dPunExp" type="tdPunExp"/>
+                    <xs:element name="dNumIn" type="tdNumDE"/>
+                    <xs:element name="dNumFin" type="tdNumDE"/>
+                    <xs:element name="iTiDE" type="tiTiDE"/>
+                    <xs:element name="mOtEve" type="tmotEve"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="trGeVeNotRec">
+                <xs:annotation>
+                    <xs:documentation>
+                        Grupo de Datos que identifican al evento receptor Notificación - Recepción de un DE/DTE
+                    </xs:documentation>
+                </xs:annotation>
+                <xs:sequence>
+                    <xs:element name="Id" type="tId"/>
+                    <xs:element name="dFecEmi" type="fecHhmmss"/>
+                    <xs:element name="dFecRecep" type="fecHhmmss"/>
+                    <xs:element name="iTipRec" type="tiTipEve"/>
+                    <xs:element name="dNomRec" type="tdNomRec"/>
+                    <xs:element minOccurs="0" name="dRucRec" type="tRuc"/>
+                    <xs:element minOccurs="0" name="dDVRec" type="tDVer"/>
+                    <xs:element minOccurs="0" name="dTipIDRec" type="tiTipDoc"/>
+                    <xs:element minOccurs="0" name="dNumID" type="tdNumDocId"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="trGeVeConf">
+                <xs:annotation>
+                    <xs:documentation>
+                        Grupo de Datos que identifican al evento receptor Conformidad
+                    </xs:documentation>
+                </xs:annotation>
+                <xs:sequence>
+                    <xs:element name="Id" type="tId"/>
+                    <xs:element name="iTipConf" type="tiTipEve"/>
+                    <xs:element minOccurs="0" name="dFecRecep" type="fecHhmmss"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="trGeVeDisconf">
+                <xs:annotation>
+                    <xs:documentation>
+                        Grupo de Datos que identifican al evento receptor Disconformidad
+                    </xs:documentation>
+                </xs:annotation>
+                <xs:sequence>
+                    <xs:element name="Id" type="tId"/>
+                    <xs:element name="mOtEve" type="tmotEve"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="trGeVeDescon">
+                <xs:annotation>
+                    <xs:documentation>
+                        Grupo de Datos que identifican al evento receptor Desconocimiento
+                    </xs:documentation>
+                </xs:annotation>
+                <xs:sequence>
+                    <xs:element name="Id" type="tId"/>
+                    <xs:element name="dFecEmi" type="fecHhmmss"/>
+                    <xs:element name="dFecRecep" type="fecHhmmss"/>
+                    <xs:element name="iTipRec" type="tiTipEve"/>
+                    <xs:element name="dNomRec" type="tdNomRec"/>
+                    <xs:element minOccurs="0" name="dRucRec" type="tRuc"/>
+                    <xs:element minOccurs="0" name="dDVRec" type="tDVer"/>
+                    <xs:element minOccurs="0" name="dTipIDRec" type="tiTipDoc"/>
+                    <xs:element minOccurs="0" name="dNumID" type="tdNumDocId"/>
+                    <xs:element name="mOtEve" type="tmotEve"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="tgGroupEvt">
+                <xs:annotation>
+                    <xs:documentation>
+                        Grupo del evento
+                    </xs:documentation>
+                </xs:annotation>
+                <xs:choice>
+                    <xs:element name="rGeVeCan" type="trGeVeCan"/>
+                    <xs:element name="rGeVeInu" type="trGeVeInu"/>
+                    <xs:element name="rGeVeNotRec" type="trGeVeNotRec"/>
+                    <xs:element name="rGeVeConf" type="trGeVeConf"/>
+                    <xs:element name="rGeVeDisconf" type="trGeVeDisconf"/>
+                    <xs:element name="rGeVeDescon" type="trGeVeDescon"/>
+                </xs:choice>
+            </xs:complexType>
+            <xs:complexType name="tgGroupEvtRecep">
+                <xs:annotation>
+                    <xs:documentation>
+                        Grupo del evento Receptores
+                    </xs:documentation>
+                </xs:annotation>
+                <xs:choice>
+                    <xs:element name="rGeVeNotRec" type="trGeVeNotRec"/>
+                    <xs:element name="rGeVeConf" type="trGeVeConf"/>
+                    <xs:element name="rGeVeDisconf" type="trGeVeDisconf"/>
+                    <xs:element name="rGeVeDescon" type="trGeVeDescon"/>
+                </xs:choice>
+            </xs:complexType>
+            <xs:complexType name="trEve">
+                <xs:sequence>
+                    <xs:element name="dFecFirma" type="fecHhmmss"/>
+                    <xs:element name="dVerFor" type="tVerFor"/>
+                    <xs:element name="gGroupTiEvt" type="tgGroupEvt"/>
+                </xs:sequence>
+                <xs:attribute name="Id" type="tdIdEve" use="required"/>
+            </xs:complexType>
+            <xs:complexType name="trEveRecep">
+                <xs:sequence>
+                    <xs:element name="dFecFirma" type="fecHhmmss"/>
+                    <xs:element name="dVerFor" type="tVerFor"/>
+                    <xs:element name="gGroupTiEvt" type="tgGroupEvtRecep"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="trGesEveRecep">
+                <xs:sequence>
+                    <xs:element name="rEve" type="trEveRecep"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="trGesEve">
+                <xs:sequence>
+                    <xs:element name="rEve" type="trEve"/>
+                    <xs:element ref="ns0:Signature">
+                        <xs:annotation>
+                            <xs:documentation>
+                                Firma Digital del DE
+                            </xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="tgGroupGesEve">
+                <xs:sequence>
+                    <xs:element maxOccurs="15" name="rGesEve" type="trGesEve"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:simpleType name="dVerFormType">
+                <xs:annotation>
+                    <xs:documentation>Version del formato del documento electronico</xs:documentation>
+                </xs:annotation>
+                <xs:restriction base="xs:decimal">
+                    <xs:pattern value="[0-9]{4,5}[.][0-9]{2}"/>
+                    <xs:fractionDigits value="2"/>
+                    <xs:totalDigits value="7"/>
+                </xs:restriction>
+            </xs:simpleType>
+            <xs:simpleType name="iAmbType">
+                <xs:annotation>
+                    <xs:documentation>Ambiente de destino: 1:Produccion, 2:Prueba</xs:documentation>
+                </xs:annotation>
+                <xs:restriction base="xs:short">
+                    <xs:enumeration value="1"/>
+                    <xs:enumeration value="2"/>
+                    <xs:totalDigits value="1"/>
+                </xs:restriction>
+            </xs:simpleType>
+            <xs:simpleType name="tVerFor">
+                <xs:annotation>
+                    <xs:documentation>
+                        Version del Formato del documento electronico
+                    </xs:documentation>
+                </xs:annotation>
+                <xs:restriction base="xs:integer">
+                    <xs:pattern value="[1][4][1]|[1][5][0]"/>
+                    <xs:totalDigits value="3"/>
+                </xs:restriction>
+            </xs:simpleType>
+            <xs:simpleType name="tEvent">
+                <xs:annotation>
+                    <xs:documentation>
+                        Tipo de Evento
+                    </xs:documentation>
+                </xs:annotation>
+                <xs:restriction base="xs:integer">
+                    <xs:totalDigits value="1"/>
+                </xs:restriction>
+            </xs:simpleType>
+            <xs:simpleType name="tId">
+                <xs:annotation>
+                    <xs:documentation>
+                        Codigo de Control del Documento Electronico
+                    </xs:documentation>
+                </xs:annotation>
+                <xs:restriction base="xs:string">
+                    <xs:pattern value="[0-9]{2}([0-9]{7}[0-9A-D]?)[0-9]{34}"/>
+                    <xs:length value="44"/>
+                </xs:restriction>
+            </xs:simpleType>
+            <xs:simpleType name="tmotEve">
+                <xs:annotation>
+                    <xs:documentation>
+                        Motivo del Evento
+                    </xs:documentation>
+                </xs:annotation>
+                <xs:restriction base="xs:string">
+                    <xs:minLength value="5"/>
+                    <xs:maxLength value="500"/>
+                </xs:restriction>
+            </xs:simpleType>
+            <xs:simpleType name="tDateTimeUTC">
+                <xs:annotation>
+                    <xs:documentation>
+                        Normalizador de Fecha y Hora en Formato UTC
+                    </xs:documentation>
+                </xs:annotation>
+                <xs:restriction base="xs:dateTime">
+                    <xs:pattern value="\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d[+|-]\d\d:\d\d"/>
+                </xs:restriction>
+            </xs:simpleType>
+            <xs:simpleType name="fecHhmmss">
+                <xs:annotation>
+                    <xs:documentation>
+                        Normalizador de Fecha y Hora AAAA-MM-DDThh:mm:ss
+                    </xs:documentation>
+                </xs:annotation>
+                <xs:restriction base="xs:dateTime">
+                    <xs:pattern value="\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d"/>
+                </xs:restriction>
+            </xs:simpleType>
+            <xs:simpleType name="tdNumTim">
+                <xs:annotation>
+                    <xs:documentation>
+                        Numero de timbrado
+                    </xs:documentation>
+                </xs:annotation>
+                <xs:restriction base="xs:string">
+                    <xs:minLength value="8"/>
+                    <xs:maxLength value="8"/>
+                    <xs:pattern value="0+[1-9][0-9]*|[1-9]+[0-9]+"/>
+                </xs:restriction>
+            </xs:simpleType>
+            <xs:simpleType name="tdEst">
+                <xs:annotation>
+                    <xs:documentation>
+                        Código de establecimiento proveído por el Sistema de timbrado
+                    </xs:documentation>
+                </xs:annotation>
+                <xs:restriction base="xs:string">
+                    <xs:length value="3"/>
+                    <xs:pattern value="[0-9]{3}"/>
+                </xs:restriction>
+            </xs:simpleType>
+            <xs:simpleType name="tdPunExp">
+                <xs:annotation>
+                    <xs:documentation>
+                        Código de Punto de Expedición proveído por el Sistema de Timbrado
+                    </xs:documentation>
+                </xs:annotation>
+                <xs:restriction base="xs:string">
+                    <xs:length value="3"/>
+                    <xs:pattern value="[0-9]{3}"/>
+                </xs:restriction>
+            </xs:simpleType>
+            <xs:simpleType name="tdNumDoc">
+                <xs:annotation>
+                    <xs:documentation>
+                        Número del Documento de Identidad
+                    </xs:documentation>
+                </xs:annotation>
+                <xs:restriction base="xs:string">
+                    <xs:minLength value="7"/>
+                    <xs:maxLength value="7"/>
+                    <xs:pattern value="0+[1-9][0-9]*|[1-9]+[0-9]+"/>
+                </xs:restriction>
+            </xs:simpleType>
+            <xs:simpleType name="tiTiDE">
+                <xs:annotation>
+                    <xs:documentation>
+                        Tipo de documento electronico
+                    </xs:documentation>
+                </xs:annotation>
+                <xs:restriction base="xs:short">
+                    <xs:totalDigits value="2"/>
+                    <xs:enumeration value="1"/>
+                    <xs:enumeration value="2"/>
+                    <xs:enumeration value="3"/>
+                    <xs:enumeration value="4"/>
+                    <xs:enumeration value="5"/>
+                    <xs:enumeration value="6"/>
+                    <xs:enumeration value="7"/>
+                    <xs:enumeration value="8"/>
+                </xs:restriction>
+            </xs:simpleType>
+            <xs:simpleType name="tdTiGDE">
+                <xs:annotation>
+                    <xs:documentation>
+                        Tipo de Evento
+                    </xs:documentation>
+                </xs:annotation>
+                <xs:restriction base="xs:short">
+                    <xs:totalDigits value="2"/>
+                    <xs:enumeration value="1"/>
+                    <xs:enumeration value="2"/>
+                    <xs:enumeration value="3"/>
+                    <xs:enumeration value="10"/>
+                    <xs:enumeration value="11"/>
+                    <xs:enumeration value="12"/>
+                    <xs:enumeration value="13"/>
+                </xs:restriction>
+            </xs:simpleType>
+            <xs:simpleType name="tdNumDE">
+                <xs:annotation>
+                    <xs:documentation>
+                        Número Inicio del rango del Documento
+                    </xs:documentation>
+                </xs:annotation>
+                <xs:restriction base="xs:string">
+                    <xs:minLength value="7"/>
+                    <xs:pattern value="0+[1-9][0-9]*|[1-9]+[0-9]+"/>
+                </xs:restriction>
+            </xs:simpleType>
+            <xs:simpleType name="tdIdEve">
+                <xs:annotation>
+                    <xs:documentation>
+                        Número Identificador del Evento
+                    </xs:documentation>
+                </xs:annotation>
+                <xs:restriction base="xs:integer">
+                    <xs:pattern value="[0-9]+"/>
+                    <xs:minInclusive value="1"/>
+                    <xs:maxInclusive value="9999999999"/>
+                </xs:restriction>
+            </xs:simpleType>
+            <xs:simpleType name="tiTipEve">
+                <xs:annotation>
+                    <xs:documentation>
+                        Tipo de Receptor
+                    </xs:documentation>
+                </xs:annotation>
+                <xs:restriction base="xs:positiveInteger">
+                    <xs:totalDigits value="1"/>
+                    <xs:enumeration value="1"/>
+                    <xs:enumeration value="2"/>
+                </xs:restriction>
+            </xs:simpleType>
+            <xs:simpleType name="tdNomRec">
+                <xs:annotation>
+                    <xs:documentation>
+                        Nombre del Receptor
+                    </xs:documentation>
+                </xs:annotation>
+                <xs:restriction base="xs:string">
+                    <xs:minLength value="4"/>
+                    <xs:maxLength value="60"/>
+                </xs:restriction>
+            </xs:simpleType>
+            <xs:simpleType name="tRuc">
+                <xs:restriction base="xs:string">
+                    <xs:minLength value="3"/>
+                    <xs:maxLength value="8"/>
+                    <xs:pattern value="[1-9][0-9]*[0-9A-D]?"/>
+                </xs:restriction>
+            </xs:simpleType>
+            <xs:simpleType name="tDVer">
+                <xs:restriction base="xs:integer">
+                    <xs:pattern value="[0-9]"/>
+                    <xs:whiteSpace value="collapse"/>
+                </xs:restriction>
+            </xs:simpleType>
+            <xs:simpleType name="tiTipDoc">
+                <xs:annotation>
+                    <xs:documentation>
+                        Tipo de documento de identidad del receptor
+                    </xs:documentation>
+                </xs:annotation>
+                <xs:restriction base="xs:integer">
+                    <xs:whiteSpace value="collapse"/>
+                    <xs:pattern value="[1-4]"/>
+                </xs:restriction>
+            </xs:simpleType>
+            <xs:simpleType name="tdNumDocId">
+                <xs:annotation>
+                    <xs:documentation>
+                        Numero de documento de identidad
+                    </xs:documentation>
+                </xs:annotation>
+                <xs:restriction base="xs:string">
+                    <xs:pattern value="[0-9A-Za-z\-]{1,20}"/>
+                </xs:restriction>
+            </xs:simpleType>
+            <xs:simpleType name="tdRecepFut">
+                <xs:annotation>
+                    <xs:documentation>
+                        Recepción Futura
+                    </xs:documentation>
+                </xs:annotation>
+                <xs:restriction base="xs:integer">
+                    <xs:whiteSpace value="collapse"/>
+                    <xs:pattern value="[0-1]"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:schema>
+        <schema xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns="http://www.w3.org/2001/XMLSchema"
+                attributeFormDefault="unqualified" elementFormDefault="qualified"
+                targetNamespace="http://www.w3.org/2000/09/xmldsig#">
+            <simpleType name="CryptoBinary">
+                <restriction base="base64Binary"/>
+            </simpleType>
+            <element name="Signature" type="ds:SignatureType"/>
+            <complexType name="SignatureType">
+                <sequence>
+                    <element ref="ds:SignedInfo"/>
+                    <element ref="ds:SignatureValue"/>
+                    <element minOccurs="0" ref="ds:KeyInfo"/>
+                    <element maxOccurs="unbounded" minOccurs="0" ref="ds:Object"/>
+                </sequence>
+                <attribute name="Id" type="ID" use="optional"/>
+            </complexType>
+            <element name="SignatureValue" type="ds:SignatureValueType"/>
+            <complexType name="SignatureValueType">
+                <simpleContent>
+                    <extension base="base64Binary">
+                        <attribute name="Id" type="ID" use="optional"/>
+                    </extension>
+                </simpleContent>
+            </complexType>
+            <element name="SignedInfo" type="ds:SignedInfoType"/>
+            <complexType name="SignedInfoType">
+                <sequence>
+                    <element ref="ds:CanonicalizationMethod"/>
+                    <element ref="ds:SignatureMethod"/>
+                    <element maxOccurs="unbounded" ref="ds:Reference"/>
+                </sequence>
+                <attribute name="Id" type="ID" use="optional"/>
+            </complexType>
+            <element name="CanonicalizationMethod" type="ds:CanonicalizationMethodType"/>
+            <complexType mixed="true" name="CanonicalizationMethodType">
+                <sequence>
+                    <any maxOccurs="unbounded" minOccurs="0" namespace="##any"/>
+                </sequence>
+                <attribute name="Algorithm" type="anyURI" use="required"/>
+            </complexType>
+            <element name="SignatureMethod" type="ds:SignatureMethodType"/>
+            <complexType mixed="true" name="SignatureMethodType">
+                <sequence>
+                    <element minOccurs="0" name="HMACOutputLength" type="ds:HMACOutputLengthType"/>
+                    <any maxOccurs="unbounded" minOccurs="0" namespace="##other"/>
+                </sequence>
+                <attribute name="Algorithm" type="anyURI" use="required"/>
+            </complexType>
+            <element name="Reference" type="ds:ReferenceType"/>
+            <complexType name="ReferenceType">
+                <sequence>
+                    <element minOccurs="0" ref="ds:Transforms"/>
+                    <element ref="ds:DigestMethod"/>
+                    <element ref="ds:DigestValue"/>
+                </sequence>
+                <attribute name="Id" type="ID" use="optional"/>
+                <attribute name="URI" type="anyURI" use="optional"/>
+                <attribute name="Type" type="anyURI" use="optional"/>
+            </complexType>
+            <element name="Transforms" type="ds:TransformsType"/>
+            <complexType name="TransformsType">
+                <sequence>
+                    <element maxOccurs="unbounded" ref="ds:Transform"/>
+                </sequence>
+            </complexType>
+            <element name="Transform" type="ds:TransformType"/>
+            <complexType mixed="true" name="TransformType">
+                <choice maxOccurs="unbounded" minOccurs="0">
+                    <any namespace="##other" processContents="lax"/>
+                    <element name="XPath" type="string"/>
+                </choice>
+                <attribute name="Algorithm" type="anyURI" use="required"/>
+            </complexType>
+            <element name="DigestMethod" type="ds:DigestMethodType"/>
+            <complexType mixed="true" name="DigestMethodType">
+                <sequence>
+                    <any maxOccurs="unbounded" minOccurs="0" namespace="##other" processContents="lax"/>
+                </sequence>
+                <attribute name="Algorithm" type="anyURI" use="required"/>
+            </complexType>
+            <element name="DigestValue" type="ds:DigestValueType"/>
+            <simpleType name="DigestValueType">
+                <restriction base="base64Binary"/>
+            </simpleType>
+            <element name="KeyInfo" type="ds:KeyInfoType"/>
+            <complexType mixed="true" name="KeyInfoType">
+                <choice maxOccurs="unbounded">
+                    <element ref="ds:KeyName"/>
+                    <element ref="ds:KeyValue"/>
+                    <element ref="ds:RetrievalMethod"/>
+                    <element ref="ds:X509Data"/>
+                    <element ref="ds:PGPData"/>
+                    <element ref="ds:SPKIData"/>
+                    <element ref="ds:MgmtData"/>
+                    <any namespace="##other" processContents="lax"/>
+                </choice>
+                <attribute name="Id" type="ID" use="optional"/>
+            </complexType>
+            <element name="KeyName" type="string"/>
+            <element name="MgmtData" type="string"/>
+            <element name="KeyValue" type="ds:KeyValueType"/>
+            <complexType mixed="true" name="KeyValueType">
+                <choice>
+                    <element ref="ds:DSAKeyValue"/>
+                    <element ref="ds:RSAKeyValue"/>
+                    <any namespace="##other" processContents="lax"/>
+                </choice>
+            </complexType>
+            <element name="RetrievalMethod" type="ds:RetrievalMethodType"/>
+            <complexType name="RetrievalMethodType">
+                <sequence>
+                    <element minOccurs="0" ref="ds:Transforms"/>
+                </sequence>
+                <attribute name="URI" type="anyURI"/>
+                <attribute name="Type" type="anyURI" use="optional"/>
+            </complexType>
+            <element name="X509Data" type="ds:X509DataType"/>
+            <complexType name="X509DataType">
+                <sequence maxOccurs="unbounded">
+                    <choice>
+                        <element name="X509IssuerSerial" type="ds:X509IssuerSerialType"/>
+                        <element name="X509SKI" type="base64Binary"/>
+                        <element name="X509SubjectName" type="string"/>
+                        <element name="X509Certificate" type="base64Binary"/>
+                        <element name="X509CRL" type="base64Binary"/>
+                        <any namespace="##other" processContents="lax"/>
+                    </choice>
+                </sequence>
+            </complexType>
+            <complexType name="X509IssuerSerialType">
+                <sequence>
+                    <element name="X509IssuerName" type="string"/>
+                    <element name="X509SerialNumber" type="integer"/>
+                </sequence>
+            </complexType>
+            <element name="PGPData" type="ds:PGPDataType"/>
+            <complexType name="PGPDataType">
+                <choice>
+                    <sequence>
+                        <element name="PGPKeyID" type="base64Binary"/>
+                        <element minOccurs="0" name="PGPKeyPacket" type="base64Binary"/>
+                        <any maxOccurs="unbounded" minOccurs="0" namespace="##other" processContents="lax"/>
+                    </sequence>
+                    <sequence>
+                        <element name="PGPKeyPacket" type="base64Binary"/>
+                        <any maxOccurs="unbounded" minOccurs="0" namespace="##other" processContents="lax"/>
+                    </sequence>
+                </choice>
+            </complexType>
+            <element name="SPKIData" type="ds:SPKIDataType"/>
+            <complexType name="SPKIDataType">
+                <sequence maxOccurs="unbounded">
+                    <element name="SPKISexp" type="base64Binary"/>
+                    <any minOccurs="0" namespace="##other" processContents="lax"/>
+                </sequence>
+            </complexType>
+            <element name="Object" type="ds:ObjectType"/>
+            <complexType mixed="true" name="ObjectType">
+                <sequence maxOccurs="unbounded" minOccurs="0">
+                    <any namespace="##any" processContents="lax"/>
+                </sequence>
+                <attribute name="Id" type="ID" use="optional"/>
+                <attribute name="MimeType" type="string" use="optional"/>
+                <attribute name="Encoding" type="anyURI" use="optional"/>
+            </complexType>
+            <element name="Manifest" type="ds:ManifestType"/>
+            <complexType name="ManifestType">
+                <sequence>
+                    <element maxOccurs="unbounded" ref="ds:Reference"/>
+                </sequence>
+                <attribute name="Id" type="ID" use="optional"/>
+            </complexType>
+            <element name="SignatureProperties" type="ds:SignaturePropertiesType"/>
+            <complexType name="SignaturePropertiesType">
+                <sequence>
+                    <element maxOccurs="unbounded" ref="ds:SignatureProperty"/>
+                </sequence>
+                <attribute name="Id" type="ID" use="optional"/>
+            </complexType>
+            <element name="SignatureProperty" type="ds:SignaturePropertyType"/>
+            <complexType mixed="true" name="SignaturePropertyType">
+                <choice maxOccurs="unbounded">
+                    <any namespace="##other" processContents="lax"/>
+                </choice>
+                <attribute name="Target" type="anyURI" use="required"/>
+                <attribute name="Id" type="ID" use="optional"/>
+            </complexType>
+            <simpleType name="HMACOutputLengthType">
+                <restriction base="integer"/>
+            </simpleType>
+            <element name="DSAKeyValue" type="ds:DSAKeyValueType"/>
+            <complexType name="DSAKeyValueType">
+                <sequence>
+                    <sequence minOccurs="0">
+                        <element name="P" type="ds:CryptoBinary"/>
+                        <element name="Q" type="ds:CryptoBinary"/>
+                    </sequence>
+                    <element minOccurs="0" name="G" type="ds:CryptoBinary"/>
+                    <element name="Y" type="ds:CryptoBinary"/>
+                    <element minOccurs="0" name="J" type="ds:CryptoBinary"/>
+                    <sequence minOccurs="0">
+                        <element name="Seed" type="ds:CryptoBinary"/>
+                        <element name="PgenCounter" type="ds:CryptoBinary"/>
+                    </sequence>
+                </sequence>
+            </complexType>
+            <element name="RSAKeyValue" type="ds:RSAKeyValueType"/>
+            <complexType name="RSAKeyValueType">
+                <sequence>
+                    <element name="Modulus" type="ds:CryptoBinary"/>
+                    <element name="Exponent" type="ds:CryptoBinary"/>
+                </sequence>
+            </complexType>
+        </schema>
+    </wsdl:types>
+    <wsdl:message name="rEnviEventoDe">
+        <wsdl:part element="tns:rEnviEventoDe" name="rEnviEventoDe">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="rRetEnviEventoDe">
+        <wsdl:part element="tns:rRetEnviEventoDe" name="rRetEnviEventoDe">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:portType name="de-ws-eventos-evento">
+        <wsdl:operation name="rEnviEventoDe">
+            <wsdl:input message="tns:rEnviEventoDe" name="rEnviEventoDe">
+            </wsdl:input>
+            <wsdl:output message="tns:rRetEnviEventoDe" name="rRetEnviEventoDe">
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:portType>
+    <wsdl:binding name="de-ws-eventos-eventoSoap12" type="tns:de-ws-eventos-evento">
+        <soap12:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+        <wsdl:operation name="rEnviEventoDe">
+            <soap12:operation soapAction=""/>
+            <wsdl:input name="rEnviEventoDe">
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="rRetEnviEventoDe">
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:service name="de-ws-eventos-eventoService">
+        <wsdl:port binding="tns:de-ws-eventos-eventoSoap12" name="de-ws-eventos-eventoSoap12">
+            <soap12:address location="http://jboss.desa.set.gov.py/sifen-ws-eventos/ws"/>
+        </wsdl:port>
+    </wsdl:service>
+</wsdl:definitions>

@@ -11,6 +11,7 @@ import javax.ejb.EJB;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import org.xml.sax.SAXException;
@@ -45,23 +46,22 @@ public class ComunicaSifenService {
         return sifenServices.consultarRUC(request);
     }
     
-    
     @Path("/de")
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_XML)
     public Object comunicacionSoap(InputStream xmlInputStream) throws IOException, SAXException {
-            //Llama al servicio para enviar el DE
-            return sifenServices.sendDeToSifen(xmlInputStream);
+        //Llama al servicio para enviar el DE
+        return sifenServices.sendDeToSifen(xmlInputStream);
     }
 
-    /*@Path("/evento")
+    @Path("/evento")
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_XML)
     public Object enviarEvento(InputStream xmlInputStream) {
-            //Llama al servicio para enviar el evento al sifen
-            return sifenServices.sendXmlSoapEvent(xmlInputStream);
+        //Llama al servicio para enviar el evento al sifen
+        return sifenServices.sendXmlSoapEvent(xmlInputStream);
     }
 
     @Path("/lote/{itemID}")
@@ -69,9 +69,8 @@ public class ComunicaSifenService {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_XML)
     public Object loteSoap(@PathParam("itemID") String loteId, InputStream xmlInputStream) {
-            //Llama al servicio para enviar el DE
-            return sifenServices.sendLoteToSifen(xmlInputStream, loteId);
+        //Llama al servicio para enviar el DE
+        return sifenServices.sendLoteToSifen(xmlInputStream, loteId);
     }
 
-    */
 }
